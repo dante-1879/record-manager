@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Record Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .upload-box {
+            border: 3px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .upload-box:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: 600;
+        }
+
+        .file-label:hover {
+            background: #5a6fd8;
+        }
+
+        .file-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .search-section {
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 300px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            padding: 12px 30px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #219a52;
+        }
+
+        .clear-btn {
+            padding: 12px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #d43f33;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+        }
+
+        .balance-summary {
+            display: flex;
+            gap: 20px;
+        }
+
+        .balance-item {
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .total-bills {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .total-credits {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .net-balance {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .net-balance.positive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .net-balance.negative {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .records-table thead,
+        .records-table tbody,
+        .records-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .records-table thead {
+            width: calc(100% - 1em);
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .records-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .records-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .amount-bill {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .amount-credit {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .balance-summary {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .records-table {
+                font-size: 0.8rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .records-table th,
+            .records-table td {
+                padding: 8px 4px;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Business Record Manager</h1>
+            <p>Track invoices issued and payments received to monitor outstanding balances</p>
+        </div>
+
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-box">
+                    <h3>📄 Bills/Invoices CSV</h3>
+                    <label for="billsFile" class="file-label">Choose Invoices File</label>
+                    <input type="file" id="billsFile" class="file-input" accept=".csv" />
+                    <div class="file-status" id="billsStatus">No file selected</div>
+                </div>
+
+                <div class="upload-box">
+                    <h3>💰 Payments/Credits CSV</h3>
+                    <label for="creditsFile" class="file-label">Choose Payments File</label>
+                    <input type="file" id="creditsFile" class="file-input" accept=".csv" />
+                    <div class="file-status" id="creditsStatus">No file selected</div>
+                </div>
+
+                <div class="upload-box" style="grid-column: 1 / -1; border-color: #4CAF50;">
+                    <h3>📈 Excel File (Multiple Sheets)</h3>
+                    <p style="margin: 10px 0; font-size: 0.9rem; color: #666;">Upload Excel file with separate sheets for invoices and payments</p>
+                    <label for="excelFile" class="file-label" style="background: #4CAF50;">Choose Excel File</label>
+                    <input type="file" id="excelFile" class="file-input" accept=".xlsx,.xls" />
+                    <div class="file-status" id="excelStatus">No file selected</div>
+                    <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 6px; font-size: 0.85rem; color: #2e7d32;">
+                        <strong>Supported:</strong> Sheets named like "Bills", "Invoices", "Credits", "Payments", etc.
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by company name (leave empty to show all)..." />
+                    <button id="searchBtn" class="search-btn">🔍 Search</button>
+                    <button id="clearBtn" class="clear-btn">🗑️ Clear Results</button>
+                    <button id="clearFilesBtn" class="clear-btn" style="background: #f39c12;">📁 Clear Files</button>
+                    <button id="exportBtn" class="search-btn" style="background: #2ecc71;">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <div class="results-header">
+                    <h3 class="results-title" id="resultsTitle">Search Results</h3>
+                    <div class="balance-summary" id="balanceSummary"></div>
+                </div>
+                <div id="recordsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
